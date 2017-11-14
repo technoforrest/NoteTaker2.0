@@ -2,9 +2,7 @@ package com.example.schwartz.pa5;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -82,32 +80,27 @@ public class NoteDBHelper extends SQLiteOpenHelper {
 
         return contacts;
     }
-    public Note selectNoteById(long id){
-       // SELECT * FROM tablecontacts WHERE _id = id
-        String sqlSelectNote = "SELECT * FROM" + TABLE_NOTES + "WHERE" + ID + "= '" + id + "'";
-        Log.d(TAG, "selectNoteById: " + sqlSelectNote);
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(sqlSelectNote);
-        Cursor cursor = getSelectAllNoteCursor();
-        Note note = new Note();
-        while (cursor.moveToNext()) { // returns false when there is no next
-            // extract record info and package into a contact
-            id = cursor.getLong(0);
-            String title = cursor.getString(1);
-            // task: finish extracting info, create a contact, insert the contact into
-            // list
-            String category = cursor.getString(2);
-            String content = cursor.getString(3);
-            int imageResourceId = cursor.getInt(4);
-            note = new Note(id, title, category, content, imageResourceId);
-        }
-            return note;
+
+    public Note selectNoteById(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_NOTES, new String[] { ID,
+                        TITLE, CATEGORY, CONTENT, IMAGE_RESOURCE_ID }, ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        Note note = new Note(cursor.getLong(0),
+                cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4));
+
+        return note;
     }
-    public void updateNoteById(int id, String title, String category, String content, int imageResource) {
+
+    public void updateNoteById(long id, String title, String category, String content, int imageResource) {
 
         String sqlUpdateNote = "UPDATE " + TABLE_NOTES + " WHERE " + ID + " = '" + id + "', SET " +
                 TITLE + " = '" + title + "', SET " + CATEGORY + " = '" + category + "', SET " +
-                CONTENT + " = '" + content + "', WHERE " + IMAGE_RESOURCE_ID + " = '" +
+                CONTENT + " = '" + content + "', SET " + IMAGE_RESOURCE_ID + " = '" +
                 imageResource + "'";
         Log.d(TAG, "insertNote: " + sqlUpdateNote);
         SQLiteDatabase db = this.getWritableDatabase();

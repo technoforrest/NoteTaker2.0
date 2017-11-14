@@ -24,11 +24,11 @@ import android.widget.Toast;
 public class NoteActivity extends AppCompatActivity {
 
     //initializations
-    private int id;
+    private long id;
     private String title;
     private String category;
     private String content;
-    private int imageResource;
+    private int imageResourceId;
     private String type[] = {"Category","Personal","School","Work","Other"};
     private String TAG = "NoteActivity";
     private Integer images[] = {0, R.drawable.personal, R.drawable.school, R.drawable.work, R.drawable.other};
@@ -58,6 +58,11 @@ public class NoteActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent != null) {
+            id = intent.getLongExtra("Id", -1);
+            title = intent.getStringExtra("Title");
+            category = intent.getStringExtra("Category");
+            content = intent.getStringExtra("Content");
+            imageResourceId = intent.getIntExtra("ImageResourceId", 0);
 
             //spinner.setAdapter(new SpinnerAdapter(NoteActivity.this, R.layout.activity_note, type));
             ArrayAdapter<String> adapter = new SpinnerAdapter(NoteActivity.this, R.layout.activity_note, type);
@@ -138,9 +143,11 @@ public class NoteActivity extends AppCompatActivity {
                     title = titleTxt.getText().toString();
                     content = contentTxt.getText().toString();
                     Intent intent = new Intent(NoteActivity.this, MainActivity.class);
+                    intent.putExtra("Id", id);
                     intent.putExtra("Title", title);
                     intent.putExtra("Category", category);
                     intent.putExtra("Content", content);
+                    intent.putExtra("ImageRousourceId", 0);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
@@ -168,11 +175,16 @@ public class NoteActivity extends AppCompatActivity {
             Log.d(TAG, "getView: " + position);
             LayoutInflater inflater=getLayoutInflater();
             View item = inflater.inflate(R.layout.activity_note, parent, false);
-
             TextView label = (TextView) item.findViewById(R.id.tvLanguage);
-            label.setText(type[position]);
             ImageView icon=(ImageView)item.findViewById(R.id.imgLanguage);
-            icon.setImageResource(images[position]);
+            if(type[1].toString()== category){
+                label.setText(type[1]);
+                icon.setImageResource(images[1]);
+            }else{
+                label.setText(type[position]);
+                icon.setImageResource(images[position]);
+            }
+
             return item;
         }
         @Override

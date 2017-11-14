@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private String title;
     private String category;
     private String content;
-    private int id;
+    private long id;
     private int imageResource;
 
     private ListView listView;
@@ -264,36 +264,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            id = data.getLongExtra("Id", -1);
             title = data.getStringExtra("Title");
             category = data.getStringExtra("Category");
             content = data.getStringExtra("Content");
-            Note note = new Note(title, category, content);
-            NoteDBHelper databaseHelper = new NoteDBHelper(MainActivity.this);
-           // String title = titleTxt.getText().toString(); get these as intents
-            //String content = contentTxt.getText().toString();
-            databaseHelper.insertNote(new Note(id, title, category, content, imageResource));
+
+                //databaseHelper.updateNoteById(id, title, category, content, imageResource);
+
+                //NoteDBHelper databaseHelper = new NoteDBHelper(MainActivity.this);
+                // String title = titleTxt.getText().toString(); get these as intents
+                //String content = contentTxt.getText().toString();
+
+                databaseHelper.insertNote(new Note(id, title, category, content, imageResource));
+
             Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
             cursorAdapter.changeCursor(newCursor);
-
-            //finish();
-            if(doesNoteExist(title)) {
-                //this.noteList.add(note);
-                //titleList.add(title);
-                //titleArrayAdapter.notifyDataSetChanged();
-            }
 
         }
     }
     /**
      * checks to see if the note already exists in the list
-     * @param newNote
+     * @param
      * @return true or false
      */
-    public boolean doesNoteExist(String newNote){
-        for(Note note : noteList){
-            if(note.getTitle().equals(newNote))
-                return false;
-        }
+    public boolean doesNoteExist(){
+
         return true;
     }
     /**
