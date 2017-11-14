@@ -58,22 +58,14 @@ public class MainActivity extends AppCompatActivity {
     private SimpleCursorAdapter cursorAdapter;
     private Cursor cursor;
     private NoteDBHelper databaseHelper;
-    private List<String> titleList;
-    private ArrayList<Note> noteList = new ArrayList<>();
-    private ArrayAdapter titleArrayAdapter;
     static final int REQUEST_CODE = 0;
-    private ListView titleListView;
     private String title;
     private String category;
     private String content;
-    private int id;
+    private long id;
     private int imageResource;
     private long position;
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 
     private ListView listView;
 
@@ -133,15 +125,11 @@ public class MainActivity extends AppCompatActivity {
                 Cursor cursor = databaseHelper.getSelectAllNoteCursor();
                 cursorAdapter.changeCursor(cursor);
                 listView.setAdapter(cursorAdapter);
+                Log.d(TAG, "onItemClick: START ACTIVITY FOR RESULT");
                 startActivityForResult(intent, REQUEST_CODE);
-
-
             }
         });
-        Cursor newCursor1 = databaseHelper.getSelectAllNoteCursor();
-        cursorAdapter.changeCursor(newCursor1);
-        final ListView listView = new ListView(this);
-        listView.setAdapter(cursorAdapter);
+
         // set the listview to support multiple selections
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -191,9 +179,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        Cursor newCursor2 = databaseHelper.getSelectAllNoteCursor();
-        cursorAdapter.changeCursor(newCursor2);
 
       /*  listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
@@ -322,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "onActivityResult: inside");
-            long id = data.getLongExtra("Id", -1);
+            id = data.getLongExtra("Id", -1);
             title = data.getStringExtra("Title");
             category = data.getStringExtra("Category");
             content = data.getStringExtra("Content");
@@ -332,9 +317,6 @@ public class MainActivity extends AppCompatActivity {
                 databaseHelper.updateNoteById(new Note (id, title, category, content, imageResource));
 
             }else {
-                //inset a new note
-
-                //Note note = new Note(id, title, category, content, imageResource);
                 databaseHelper.insertNote(new Note(id, title, category, content, imageResource));
             }
 
