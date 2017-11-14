@@ -171,17 +171,16 @@ public class MainActivity extends AppCompatActivity {
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 int menuId = menuItem.getItemId();
                 switch(menuId) {
-                    case R.id.deleteMenuItem:
+                    case R.id.deleteMenuAction:
                         databaseHelper.deleteNote(position);
-                        Cursor cursor = databaseHelper.getSelectAllNoteCursor();
-                        listView.setAdapter(cursorAdapter);
+                        Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
+                        cursorAdapter.changeCursor(newCursor);
                         return true;
-                  
+                    default:
+                        return false;
                 }
 
-                //long pos = 0;
-                //Note id = databaseHelper.selectNoteById(i);
-                return true;
+
 
             }
 //cam mode delete- not alert dialog
