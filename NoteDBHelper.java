@@ -91,18 +91,21 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public void deleteNote(int id) {
         // DELETE FROM tableContacts
         //DELETE FROM tablecontacts WHERE _id = 1
-       String sqlDeleteNote = "DELETE FROM " + TABLE_NOTES + " VALUES('" + id + "')";
+       String sqlDeleteNote = "DELETE FROM " + TABLE_NOTES + " WHERE " + ID + " = '" + id + "'";
         Log.d(TAG, "insertNote: " + sqlDeleteNote);
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(sqlDeleteNote);
     }
-    public void removeSingleNote(String title) {
+    public void deleteAll() {
         //Open the database
         SQLiteDatabase database = this.getWritableDatabase();
 
         //Execute sql query to remove from database
         //NOTE: When removing by String in SQL, value must be enclosed with ''
-        database.execSQL("DELETE FROM " + TABLE_NOTES + " WHERE " + TITLE + "= '" + title + "'");
+        String sqlDeleteNotes = "DELETE FROM " + TABLE_NOTES ;
+        Log.d(TAG, "insertNote: " + sqlDeleteNotes);
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(sqlDeleteNotes);
 
         //Close the database
         database.close();

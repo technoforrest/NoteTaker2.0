@@ -135,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
                      * @param listener
                      */
                     public void onClick(DialogInterface dialog, int listener) {
-                        //databaseHelper.deleteNote(note);
-                        //NoteDBHelper.removeSingleNote("a");
-                        //cursorAdapter.notifyDataSetChanged();
+                        databaseHelper.deleteNote(note);
+                        Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
+                        cursorAdapter.changeCursor(newCursor);
+
                     }
                 });
 
@@ -278,6 +279,7 @@ public class MainActivity extends AppCompatActivity {
         b.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int listener) {
+                databaseHelper.deleteAll();
                 Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
                 cursorAdapter.changeCursor(newCursor);
 
