@@ -96,13 +96,13 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         return note;
     }
 
-    public void updateNoteById(long id, String title, String category, String content, int imageResource) {
+    public void updateNoteById(Note note) {
 
-        String sqlUpdateNote = "UPDATE " + TABLE_NOTES + " WHERE " + ID + " = '" + id + "', SET " +
-                TITLE + " = '" + title + "', SET " + CATEGORY + " = '" + category + "', SET " +
-                CONTENT + " = '" + content + "', SET " + IMAGE_RESOURCE_ID + " = '" +
-                imageResource + "'";
-        Log.d(TAG, "insertNote: " + sqlUpdateNote);
+        String sqlUpdateNote = "UPDATE " + TABLE_NOTES + " SET " +
+                TITLE + " = '" + note.getTitle() + "', " + CATEGORY + " = '" + note.getCategory() + "', " +
+                CONTENT + " = '" + note.getContent() + "', " + IMAGE_RESOURCE_ID + " = " +
+                note.getImageResource() + " WHERE " + ID + " = " + note.getId();
+        Log.d(TAG, "updateNote: " + sqlUpdateNote);
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(sqlUpdateNote);
 
@@ -112,7 +112,7 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public void deleteNote(long id) {
         // DELETE FROM tableContacts
         //DELETE FROM tablecontacts WHERE _id = 1
-       String sqlDeleteNote = "DELETE FROM " + TABLE_NOTES + " WHERE " + ID + " = '" + id + "'";
+       String sqlDeleteNote = "DELETE FROM " + TABLE_NOTES + " WHERE " + ID + " = " + id;
         Log.d(TAG, "deleteNote: " + sqlDeleteNote);
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(sqlDeleteNote);

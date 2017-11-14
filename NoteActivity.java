@@ -77,8 +77,16 @@ public class NoteActivity extends AppCompatActivity {
                  */
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    String item = (String) adapterView.getItemAtPosition(i);
-                    Toast.makeText(adapterView.getContext(), "Item selected: " + item, Toast.LENGTH_LONG).show();
+                    for(int j = 1; j < 5; j++) {
+                        if (type[j].equals(category)) {
+                            spinner.setSelection(j);
+                            i = j;
+                            break;
+                        }
+                    }
+                    category = adapterView.getItemAtPosition(i).toString();
+
+                    //Toast.makeText(adapterView.getContext(), "Item selected: " + item, Toast.LENGTH_LONG).show();
                 }
 
                 /**
@@ -142,6 +150,8 @@ public class NoteActivity extends AppCompatActivity {
                 {
                     title = titleTxt.getText().toString();
                     content = contentTxt.getText().toString();
+                    category = String.valueOf(spinner.getSelectedItem());
+                    Log.d(TAG, "onClick: CATEGORY = " + category);
                     Intent intent = new Intent(NoteActivity.this, MainActivity.class);
                     intent.putExtra("Id", id);
                     intent.putExtra("Title", title);
@@ -172,12 +182,13 @@ public class NoteActivity extends AppCompatActivity {
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Log.d(TAG, "getView: " + position);
+
             LayoutInflater inflater=getLayoutInflater();
             View item = inflater.inflate(R.layout.activity_note, parent, false);
             TextView label = (TextView) item.findViewById(R.id.tvLanguage);
             ImageView icon=(ImageView)item.findViewById(R.id.imgLanguage);
             if(type[1].toString()== category){
+                Log.d(TAG, "getView: type[1] == category ");
                 label.setText(type[1]);
                 icon.setImageResource(images[1]);
             }else{

@@ -3,27 +3,23 @@ package com.example.schwartz.pa5;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +61,19 @@ public class MainActivity extends AppCompatActivity {
     private List<String> titleList;
     private ArrayList<Note> noteList = new ArrayList<>();
     private ArrayAdapter titleArrayAdapter;
-    static final int REQUEST_CODE = 1;
+    static final int REQUEST_CODE = 0;
     private ListView titleListView;
     private String title;
     private String category;
     private String content;
-    private long id;
+    private int id;
     private int imageResource;
+    private long position;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     private ListView listView;
 
@@ -80,15 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * creates parts of the program
+     *
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        databaseHelper =
-                new NoteDBHelper(this);
-        Log.d(TAG, "onCreate: " );
+        databaseHelper = new NoteDBHelper(this);
+        Log.d(TAG, "onCreate: ");
         cursor = databaseHelper.getSelectAllNoteCursor();
         cursorAdapter = new SimpleCursorAdapter(
                 // 6 arguements to the constructor
@@ -98,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 cursor,
                 // parallel arrays
                 // names of columns to get data FROM
-                new String[] {NoteDBHelper.TITLE},
+                new String[]{NoteDBHelper.TITLE},
                 // ids of textviews to show data IN
-                new int[] {android.R.id.text1},
+                new int[]{android.R.id.text1},
                 0 // use default behavior
         );
         Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
@@ -119,27 +121,83 @@ public class MainActivity extends AppCompatActivity {
              */
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, NoteActivity.class);
-                //SELECT * FROM tablecontacts WHERE _id = id
                 Note note = databaseHelper.selectNoteById(l);
-                long id = note.getId();
-                String title = note.getTitle();
-                String category = note.getCategory();
-                String content = note.getContent();
-                int imageResourceId = note.getImageResource();
-                intent.putExtra("Id", id);
-                intent.putExtra("Title", title);
-                intent.putExtra("Category", category);
-                intent.putExtra("Content", content);
-                intent.putExtra("ImageResourceId", imageResourceId);
+
+                Intent intent = new Intent(MainActivity.this, NoteActivity.class);
+                intent.putExtra("Id", note.getId());
+                intent.putExtra("Title", note.getTitle());
+                intent.putExtra("Category", note.getCategory());
+                intent.putExtra("Content", note.getContent());
+                intent.putExtra("ImageResourceId", note.getImageResource());
+
+                Cursor cursor = databaseHelper.getSelectAllNoteCursor();
+                cursorAdapter.changeCursor(cursor);
+                listView.setAdapter(cursorAdapter);
                 startActivityForResult(intent, REQUEST_CODE);
 
 
             }
         });
-        setContentView(listView);
+        Cursor newCursor1 = databaseHelper.getSelectAllNoteCursor();
+        cursorAdapter.changeCursor(newCursor1);
+        final ListView listView = new ListView(this);
+        listView.setAdapter(cursorAdapter);
+        // set the listview to support multiple selections
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long listener, boolean b) {
+                int numSelected = listView.getCheckedItemCount();
+                position = listener;
+                actionMode.setTitle(numSelected + " selected");
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                // inflate cam_menu
+                MenuInflater menuInflater = actionMode.getMenuInflater();
+                menuInflater.inflate(R.menu.cam_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                int menuId = menuItem.getItemId();
+                switch(menuId) {
+                    case R.id.deleteMenuItem:
+                        databaseHelper.deleteNote(position);
+                        Cursor cursor = databaseHelper.getSelectAllNoteCursor();
+                        listView.setAdapter(cursorAdapter);
+                        return true;
+                  
+                }
+
+                //long pos = 0;
+                //Note id = databaseHelper.selectNoteById(i);
+                return true;
+
+            }
+//cam mode delete- not alert dialog
+//switch statement to check id of what was selected
+//adapter
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+
+            }
+        });
+
+        Cursor newCursor2 = databaseHelper.getSelectAllNoteCursor();
+        cursorAdapter.changeCursor(newCursor2);
+
+      /*  listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
 
             /**
              * creates and implements Alert Dialog for deleting a note
@@ -148,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
              * @param i
              * @param listener
              * @return
-             */
+             */ /*
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long listener) {
                 final long notePos = listener;
@@ -159,10 +217,10 @@ public class MainActivity extends AppCompatActivity {
                 b.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     /**
-                     * deletes the note
+                     * deletes  the note
                      * @param dialog
                      * @param listener
-                     */
+                     */ /*
                     public void onClick(DialogInterface dialog, int listener) {
                         databaseHelper.deleteNote(notePos);
                         Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
@@ -177,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                      * keeps the note
                      * @param dialog
                      * @param listener
-                     */
+                     */ /*
                     public void onClick(DialogInterface dialog, int listener) {
                         dialog.cancel();
                     }
@@ -189,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                      * shares the note
                      * @param dialog
                      * @param listener
-                     */
+                     */ /*
                     public void onClick(DialogInterface dialog, int listener) {
                         Intent shareIntent = new Intent();
                         startActivity(shareIntent);
@@ -201,11 +259,11 @@ public class MainActivity extends AppCompatActivity {
                 alert.show();
                 return true;
             }
-        });
+        }); */
 
+
+        setContentView(listView);
     }
-
-
 
     /**
      * creates the menu
@@ -264,33 +322,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            id = data.getLongExtra("Id", -1);
+            Log.d(TAG, "onActivityResult: inside");
+            long id = data.getLongExtra("Id", -1);
             title = data.getStringExtra("Title");
             category = data.getStringExtra("Category");
             content = data.getStringExtra("Content");
+            imageResource = data.getIntExtra("ImageResourceId", 0);
+            if(id != -1) {
+                Log.d(TAG, "onActivityResult: id != -1");
+                databaseHelper.updateNoteById(new Note (id, title, category, content, imageResource));
 
-                //databaseHelper.updateNoteById(id, title, category, content, imageResource);
+            }else {
+                //inset a new note
 
-                //NoteDBHelper databaseHelper = new NoteDBHelper(MainActivity.this);
-                // String title = titleTxt.getText().toString(); get these as intents
-                //String content = contentTxt.getText().toString();
-
+                //Note note = new Note(id, title, category, content, imageResource);
                 databaseHelper.insertNote(new Note(id, title, category, content, imageResource));
+            }
 
             Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
             cursorAdapter.changeCursor(newCursor);
+            
 
         }
     }
-    /**
-     * checks to see if the note already exists in the list
-     * @param
-     * @return true or false
-     */
-    public boolean doesNoteExist(){
-
-        return true;
-    }
+    
     /**
      * creates the delete alert dialog when garbage is clicked
      */
