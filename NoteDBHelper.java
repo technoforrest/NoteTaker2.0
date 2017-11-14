@@ -2,6 +2,7 @@ package com.example.schwartz.pa5;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
@@ -81,18 +82,45 @@ public class NoteDBHelper extends SQLiteOpenHelper {
 
         return contacts;
     }
+    public Note selectNoteById(long id){
+       // SELECT * FROM tablecontacts WHERE _id = id
+        String sqlSelectNote = "SELECT * FROM" + TABLE_NOTES + "WHERE" + ID + "= '" + id + "'";
+        Log.d(TAG, "selectNoteById: " + sqlSelectNote);
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(sqlSelectNote);
+        Cursor cursor = getSelectAllNoteCursor();
+        Note note = new Note();
+        while (cursor.moveToNext()) { // returns false when there is no next
+            // extract record info and package into a contact
+            id = cursor.getLong(0);
+            String title = cursor.getString(1);
+            // task: finish extracting info, create a contact, insert the contact into
+            // list
+            String category = cursor.getString(2);
+            String content = cursor.getString(3);
+            int imageResourceId = cursor.getInt(4);
+            note = new Note(id, title, category, content, imageResourceId);
+        }
+            return note;
+    }
+    public void updateNoteById(int id, String title, String category, String content, int imageResource) {
 
-    public void updateNoteById(int id, Note newNote) {
-
+        String sqlUpdateNote = "UPDATE " + TABLE_NOTES + " WHERE " + ID + " = '" + id + "', SET " +
+                TITLE + " = '" + title + "', SET " + CATEGORY + " = '" + category + "', SET " +
+                CONTENT + " = '" + content + "', WHERE " + IMAGE_RESOURCE_ID + " = '" +
+                imageResource + "'";
+        Log.d(TAG, "insertNote: " + sqlUpdateNote);
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(sqlUpdateNote);
 
 
     }
 
-    public void deleteNote(int id) {
+    public void deleteNote(long id) {
         // DELETE FROM tableContacts
         //DELETE FROM tablecontacts WHERE _id = 1
        String sqlDeleteNote = "DELETE FROM " + TABLE_NOTES + " WHERE " + ID + " = '" + id + "'";
-        Log.d(TAG, "insertNote: " + sqlDeleteNote);
+        Log.d(TAG, "deleteNote: " + sqlDeleteNote);
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(sqlDeleteNote);
     }

@@ -33,7 +33,7 @@ import android.util.Log;
 public class Note  extends Object{
 
     //initializations
-    private int id;
+    private long id;
     private String title;
     private String category;
     private String content;
@@ -64,7 +64,7 @@ public class Note  extends Object{
         this.category = category;
         this.content = content;
     }
-    public Note (int newId, String title, String category, String content, int newImgResource){
+    public Note (long newId, String title, String category, String content, int newImgResource){
         Log.d(TAG, "Note: inside note constructor");
         this.id = newId;
         this.title = title;
@@ -132,6 +132,9 @@ public class Note  extends Object{
 
     public int getImageResource(){
         return imageResource;
+    }
+    public long getId(){
+        return id;
     }
 }
 

@@ -108,6 +108,35 @@ public class MainActivity extends AppCompatActivity {
         //creates list view for all of the notes
         listView = new ListView(this);
         listView.setAdapter(cursorAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            /**
+             * keeps the information of the already created note when going back to edit said note
+             * @param adapterView
+             * @param view
+             * @param i
+             * @param l
+             */
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this, NoteActivity.class);
+                //SELECT * FROM tablecontacts WHERE _id = id
+                Note note = databaseHelper.selectNoteById(l);
+                long id = note.getId();
+                String title = note.getTitle();
+                String category = note.getCategory();
+                String content = note.getContent();
+                int imageResourceId = note.getImageResource();
+                intent.putExtra("Id", id);
+                intent.putExtra("Title", title);
+                intent.putExtra("Category", category);
+                intent.putExtra("Content", content);
+                intent.putExtra("ImageResourceId", imageResourceId);
+                startActivityForResult(intent, REQUEST_CODE);
+
+
+            }
+        });
         setContentView(listView);
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -122,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
              */
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long listener) {
-                final int note = i;
+                final long notePos = listener;
                 AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
                 b.setTitle("Delete A Note");
                 b.setMessage("Are you sure you want to delete your "  + " note?");
@@ -135,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                      * @param listener
                      */
                     public void onClick(DialogInterface dialog, int listener) {
-                        databaseHelper.deleteNote(note);
+                        databaseHelper.deleteNote(notePos);
                         Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
                         cursorAdapter.changeCursor(newCursor);
 
