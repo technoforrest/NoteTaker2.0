@@ -1,5 +1,36 @@
 package com.example.schwartz.pa5;
 
+        /**
+        * This program implements a note taker to create and store notes
+        * This Activity shows and implements the list screen of all of the notes
+        * CPSC 312-01, Fall 2017
+        * Programming Assignment #7
+        *
+        * @author Holly Schwartz and Danielle Forrest
+        * @version v1.0 11/14/17
+        *
+        * contributions:
+        *      Holly Schwartz:
+        *      - Alert Dialog (created and implemented alert dialog for deleting a note)
+        *      - Grid Layout (edited and formatted layout to specifications)
+        *      - Grid Layout Features Formatting and Positioning (positioned each part of the gridlayout to specification)
+        *      - List View (helped fix errors)
+        *      - Buttons (created and formatted the Buttons)
+        *      - EditTexts (formatted the EditTexts)
+        *      - Spinner (created the spinner)
+        *      -_Database- Sellect all, build table,
+        *
+        *      Danielle Forrest:
+        *      - List View (created and implemented list view)
+        *      - Buttons (created the Buttons)
+        *      - EditTexts (created the EditTexts)
+        *      - Spinner (custom spinner adapter)
+        *      - Grid Layout (created the grid layout)
+        *      - Alert Dialog (created the share button for the alert dialog)
+        *      - Database- insert, delete, update
+        */
+
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -175,11 +206,25 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public class SpinnerAdapter extends ArrayAdapter<String> {
+        /**
+         *
+         * @param context
+         * @param textViewResourceId
+         * @param objects
+         */
         public SpinnerAdapter(Context context, int textViewResourceId,
                               String[] objects) {
             super(context, textViewResourceId, objects);
             // TODO Auto-generated constructor stub
         }
+
+        /**
+         * assigns image to spinner position and sets text within spinner
+         * @param position
+         * @param convertView
+         * @param parent
+         * @return
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -187,17 +232,18 @@ public class NoteActivity extends AppCompatActivity {
             View item = inflater.inflate(R.layout.activity_note, parent, false);
             TextView label = (TextView) item.findViewById(R.id.tvLanguage);
             ImageView icon=(ImageView)item.findViewById(R.id.imgLanguage);
-            if(type[1].toString()== category){
-                Log.d(TAG, "getView: type[1] == category ");
-                label.setText(type[1]);
-                icon.setImageResource(images[1]);
-            }else{
-                label.setText(type[position]);
-                icon.setImageResource(images[position]);
-            }
-
+            label.setText(type[position]);
+            icon.setImageResource(images[position]);
             return item;
         }
+
+        /**
+         *
+         * @param position
+         * @param convertView
+         * @param parent
+         * @return
+         */
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
             Log.d(TAG, "getDropDownView: " + position);

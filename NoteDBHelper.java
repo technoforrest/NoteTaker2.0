@@ -32,6 +32,10 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * the table is created
+     * @param db
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sqlCreate = "CREATE TABLE " + TABLE_NOTES + "(" +
@@ -45,11 +49,21 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlCreate);
     }
 
+    /**
+     *
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
 
+    /**
+     * Inserts a new note into the database
+     * @param note
+     */
     public void insertNote(Note note) {
         String sqlInsertNote = "INSERT INTO " + TABLE_NOTES + " VALUES(null, " + "'" + note.getTitle() + "', " + "'" + note.getCategory() + "', '" + note.getContent() + "', '" + note.getImageResource() + "')";
         Log.d(TAG, "insertNote: " + sqlInsertNote);
@@ -57,6 +71,10 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlInsertNote);
     }
 
+    /**
+     *
+     * @return
+     */
     public Cursor getSelectAllNoteCursor() {
         String sqlSelectAll = "SELECT * FROM " + TABLE_NOTES;
         //Log.d(TAG, "getSelectAllContactsCursor: " + sqlSelectAll);
@@ -65,6 +83,10 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Note> getSelectAllNoteList() {
         List<Note> contacts = new ArrayList<>();
         Cursor cursor = getSelectAllNoteCursor();
@@ -81,6 +103,11 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         return contacts;
     }
 
+    /**
+     * get a specific note based on ID
+     * @param id
+     * @return
+     */
     public Note selectNoteById(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -96,6 +123,10 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         return note;
     }
 
+    /**
+     * Updates a note and replaces it within the database
+     * @param note
+     */
     public void updateNoteById(Note note) {
 
         String sqlUpdateNote = "UPDATE " + TABLE_NOTES + " SET " +
@@ -109,6 +140,10 @@ public class NoteDBHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * removes a note from the database
+     * @param id
+     */
     public void deleteNote(long id) {
         // DELETE FROM tableContacts
         //DELETE FROM tablecontacts WHERE _id = 1
@@ -117,6 +152,10 @@ public class NoteDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(sqlDeleteNote);
     }
+
+    /**
+     * removes all notes from the databasse
+     */
     public void deleteAll() {
         //Open the database
         SQLiteDatabase database = this.getWritableDatabase();

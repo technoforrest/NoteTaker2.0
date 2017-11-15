@@ -16,22 +16,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This program implements a note taker to create and store notes
  * This Activity shows and implements the list screen of all of the notes
  * CPSC 312-01, Fall 2017
- * Programming Assignment #5
+ * Programming Assignment #7
  *
  * @author Holly Schwartz and Danielle Forrest
- * @version v1.0 10/19/17
+ * @version v1.0 11/14/17
  *
  * contributions:
  *      Holly Schwartz:
@@ -42,14 +38,16 @@ import java.util.List;
  *      - Buttons (created and formatted the Buttons)
  *      - EditTexts (formatted the EditTexts)
  *      - Spinner (created the spinner)
+ *      -_Database- Sellect all, build table,
  *
  *      Danielle Forrest:
  *      - List View (created and implemented list view)
  *      - Buttons (created the Buttons)
  *      - EditTexts (created the EditTexts)
- *      - Spinner (saved the spinner user results)
+ *      - Spinner (custom spinner adapter)
  *      - Grid Layout (created the grid layout)
  *      - Alert Dialog (created the share button for the alert dialog)
+ *      - Database- insert, delete, update
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -65,13 +63,8 @@ public class MainActivity extends AppCompatActivity {
     private long id;
     private int imageResource;
     private long position;
-
-
     private ListView listView;
-
-
     private String TAG = "Main";
-
     /**
      * creates parts of the program
      *
@@ -132,7 +125,17 @@ public class MainActivity extends AppCompatActivity {
 
         // set the listview to support multiple selections
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        /**
+         * Contextual action menu that allows the user to delete notes
+         */
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            /**
+             *
+             * @param actionMode
+             * @param i
+             * @param listener
+             * @param b
+             */
             @Override
             public void onItemCheckedStateChanged(ActionMode actionMode, int i, long listener, boolean b) {
                 int numSelected = listView.getCheckedItemCount();
@@ -141,6 +144,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+            /**
+             *
+             * @param actionMode
+             * @param menu
+             * @return
+             */
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 // inflate cam_menu
@@ -149,12 +158,24 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            /**
+             *
+             * @param actionMode
+             * @param menu
+             * @return
+             */
             @Override
             public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
 
                 return true;
             }
 
+            /**
+             * tells the database to delete the note and redispllays the list
+             * @param actionMode
+             * @param menuItem
+             * @return
+             */
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 int menuId = menuItem.getItemId();
@@ -167,85 +188,17 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         return false;
                 }
-
-
-
             }
-//cam mode delete- not alert dialog
-//switch statement to check id of what was selected
-//adapter
+
+            /**
+             *
+             * @param actionMode
+             */
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
 
             }
         });
-
-      /*  listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-
-            /**
-             * creates and implements Alert Dialog for deleting a note
-             * @param adapterView
-             * @param view
-             * @param i
-             * @param listener
-             * @return
-             */ /*
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long listener) {
-                final long notePos = listener;
-                AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
-                b.setTitle("Delete A Note");
-                b.setMessage("Are you sure you want to delete your "  + " note?");
-
-                b.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                    /**
-                     * deletes  the note
-                     * @param dialog
-                     * @param listener
-                     */ /*
-                    public void onClick(DialogInterface dialog, int listener) {
-                        databaseHelper.deleteNote(notePos);
-                        Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
-                        cursorAdapter.changeCursor(newCursor);
-
-                    }
-                });
-
-                b.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                    /**
-                     * keeps the note
-                     * @param dialog
-                     * @param listener
-                     */ /*
-                    public void onClick(DialogInterface dialog, int listener) {
-                        dialog.cancel();
-                    }
-                });
-
-                b.setNeutralButton("SHARE", new DialogInterface.OnClickListener() {
-
-                    /**
-                     * shares the note
-                     * @param dialog
-                     * @param listener
-                     */ /*
-                    public void onClick(DialogInterface dialog, int listener) {
-                        Intent shareIntent = new Intent();
-                        startActivity(shareIntent);
-
-                    }
-                });
-
-                AlertDialog alert = b.create();
-                alert.show();
-                return true;
-            }
-        }); */
-
-
         setContentView(listView);
     }
 
@@ -284,20 +237,16 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
     /**
      * opens up the food menu activity
      */
     private void startEditItemActivity() {
         // explicit intent
         Intent intent = new Intent(this, NoteActivity.class);
-
         startActivityForResult(intent, REQUEST_CODE);
-
     }
     /**
-     * adds a note to the list
+     * adds a note to the database or updates the database depending on whether or not the note already exists
      * @param requestCode
      * @param resultCode
      * @param data
@@ -322,8 +271,6 @@ public class MainActivity extends AppCompatActivity {
 
             Cursor newCursor = databaseHelper.getSelectAllNoteCursor();
             cursorAdapter.changeCursor(newCursor);
-            
-
         }
     }
     
@@ -356,6 +303,4 @@ public class MainActivity extends AppCompatActivity {
         alert = b.create();
         alert.show();
     }
-
-
 }

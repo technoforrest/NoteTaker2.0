@@ -64,6 +64,15 @@ public class Note  extends Object{
         this.category = category;
         this.content = content;
     }
+
+    /**
+     *
+     * @param newId
+     * @param title
+     * @param category
+     * @param content
+     * @param newImgResource
+     */
     public Note (long newId, String title, String category, String content, int newImgResource){
         Log.d(TAG, "Note: inside note constructor");
         this.id = newId;
@@ -130,9 +139,18 @@ public class Note  extends Object{
         this.content = content;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getImageResource(){
         return imageResource;
     }
+
+    /**
+     *
+     * @return
+     */
     public long getId(){
         return id;
     }
